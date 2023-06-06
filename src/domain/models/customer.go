@@ -10,7 +10,8 @@ const (
 )
 
 type Customer struct {
-	ID    uuid.UUID
-	TaxID string
-	Name  string
+	ID           uuid.UUID
+	TaxID        string
+	Name         string
+	CustomerRole CustomerRole
 }
