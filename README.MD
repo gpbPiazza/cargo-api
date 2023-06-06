@@ -30,4 +30,4 @@ Execute:
 - `make test/ci`
 
 ---
-⌨️ com ❤️ por Gabriel Piazza 😊
+⌨️ with ❤️ by G. Pedro B. Piazza 😊
