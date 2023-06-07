@@ -1,5 +1,8 @@
 package models
 
+import "github.com/google/uuid"
+
 type DeliveryHistory struct {
-	HandlingEvent *HandlingEvent
+	ID             uuid.UUID
+	HandlingEvents []*HandlingEvent
 }

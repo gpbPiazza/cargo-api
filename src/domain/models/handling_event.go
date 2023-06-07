@@ -1,6 +1,10 @@
 package models
 
-// A unique identifier for HandlingEvent is cargoID + type event
+import "github.com/google/uuid"
+
+// A unique identifier for HandlingEvent is cargoID + completion_time + type event
 type HandlingEvent struct {
-	Handled *Cargo
+	ID              uuid.UUID
+	Handled         *Cargo
+	CarrierMovement *CarrierMovement
 }
