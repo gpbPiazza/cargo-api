@@ -17,7 +17,7 @@ func (controller EventLoggingController) Control(req HttpRequest) HttpResponse {
 	return HttpResponse{}
 }
 
-func (controller EventLoggingController) Logging(ctx context.Context, cargoID uuid.UUID, logEvent dtos.EventLoggingRequest) dtos.EventLoggingResponse {
+func (controller EventLoggingController) Logging(ctx context.Context, cargoID uuid.UUID, logEvent dtos.EventLoggingParams) dtos.EventLoggingResponse {
 
 	// recebe parametros suficientes para
 	// buscar uma carga

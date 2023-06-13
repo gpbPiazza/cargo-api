@@ -1,6 +1,6 @@
 package dtos
 
-type EventLoggingRequest struct {
+type EventLoggingParams struct {
 	Type string
 }
 

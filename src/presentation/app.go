@@ -28,5 +28,5 @@ type app struct {
 }
 
 func (a app) Start() {
-	a.fiber.Listen(fmt.Sprintf(":%s", a.envs.AppPort))
+	a.fiber.Listen(fmt.Sprintf(":%s", a.envs.SERVER_PORT))
 }

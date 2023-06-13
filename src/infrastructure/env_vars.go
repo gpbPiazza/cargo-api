@@ -1,13 +1,16 @@
 package infrastructure
 
+import "os"
+
 type EnvVars struct {
-	AppPort string `env:"PORT"`
+	SERVER_PORT string
 }
 
 func NewEnvVars() EnvVars {
 	var envs EnvVars
 
-	envs.AppPort = "8080"
+	os.Setenv("SERVER_PORT", "8080")
+	envs.SERVER_PORT = "8080"
 
 	return envs
 }
