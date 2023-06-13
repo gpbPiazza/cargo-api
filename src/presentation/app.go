@@ -5,13 +5,15 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure"
+	"github.com/gpbPiazza/cargo-api/src/presentation/routes"
 )
 
 func NewApp() app {
 	fiberApp := fiber.New()
 
 	setUpMiddlewares(fiberApp)
-	setUpRoutes(fiberApp)
+	routes.SetUp(fiberApp)
+
 	envVars := infrastructure.NewEnvVars()
 
 	return app{
