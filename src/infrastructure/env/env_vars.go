@@ -29,7 +29,7 @@ func Init() {
 	globalEnvs = envs
 }
 
-func GetEnvs() EnvVars {
+func Envs() EnvVars {
 	return globalEnvs
 }
 
