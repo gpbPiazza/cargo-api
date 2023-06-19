@@ -18,7 +18,7 @@ func NewApp() app {
 
 	return app{
 		fiber: fiberApp,
-		envs:  env.GetEnvs(),
+		envs:  env.Envs(),
 	}
 }
 
