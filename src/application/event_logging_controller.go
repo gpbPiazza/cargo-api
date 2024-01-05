@@ -13,6 +13,7 @@ func NewEventLoggingController() Controller {
 
 type EventLoggingController struct{}
 
+// A camada de aplicação deveria conhcer o HTTP?
 func (controller EventLoggingController) Control(req HttpRequest) HttpResponse {
 	return HttpResponse{}
 }
