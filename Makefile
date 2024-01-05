@@ -1,2 +1,2 @@
-run-local-api:
+run/api:
 	go run ./cmd/api/main.go
