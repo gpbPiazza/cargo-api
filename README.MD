@@ -1,16 +1,12 @@
 # cargo-api
 
-> cargo-api is app will allow users to be created, authenticated and delivery a cargo management intelligence, given the main goal as tracking where the cargo shipping is and what happened to the cargo.
+> cargo-api is app will allow delivery a cargo management intelligence, given the main goal as tracking where the cargo shipping is and what happened to the cargo.
 
 README.MD DOC IN WIP
 
 ## 📦 Documentation
 
-[Folders structure](./docs/ARCHITECTURE.MD)
-
 API doc: 
-<!-- - Inicia aplicação local: `npm run start:local`
-- Visite a rota: `http://localhost:5050/api-docs/` -->
 
 TODO: Colocar DOC de visão de domínio página 395
 
