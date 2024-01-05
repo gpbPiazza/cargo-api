@@ -6,6 +6,5 @@ import (
 )
 
 func setCargoRoutes(api fiber.Router) {
-	api.Post("/cargos/:id/event-logging", cargo_handlers.PostCargoEventLogging)
 	api.Post("/cargos", cargo_handlers.Post)
 }
