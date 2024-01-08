@@ -1,7 +1,5 @@
 package models
 
-import "github.com/google/uuid"
-
 type CustomerType string
 
 const (
@@ -17,9 +15,16 @@ const (
 )
 
 type Customer struct {
-	ID    uuid.UUID
-	TaxID string
-	Name  string
-	Type  CustomerType
-	Role  CustomerRole
+	Metadata
+	TaxID   string
+	Name    string
+	Type    CustomerType
+	Role    CustomerRole
+	Contact CustomerContact
+}
+
+// Object value
+type CustomerContact struct {
+	Phone string
+	Email string
 }
