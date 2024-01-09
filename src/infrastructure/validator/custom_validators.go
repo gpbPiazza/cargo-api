@@ -1,13 +1,21 @@
 package validator
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator"
 )
 
 type tagRule string
 
+const (
+	ValidateTaxID tagRule = "validate-tax-id"
+)
+
 var (
-	customeValidatorsTagFunc = map[tagRule]func(fl validator.FieldLevel) bool{}
+	customeValidatorsTagFunc = map[tagRule]func(fl validator.FieldLevel) bool{
+		ValidateTaxID: validateTaxID,
+	}
 )
 
 func (tr tagRule) string() string {
@@ -25,4 +33,10 @@ func (tr tagRule) customValidator() func(fl validator.FieldLevel) bool {
 
 func defaultValidatorAlwaysReturnErr(fl validator.FieldLevel) bool {
 	return false
+}
+
+func validateTaxID(fl validator.FieldLevel) bool {
+	value := fl.Field().Interface()
+	tax := fmt.Sprintf("%s", value)
+	return isValidTaxID(tax)
 }
