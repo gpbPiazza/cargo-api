@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -15,10 +16,12 @@ type SignupControllerSuite struct {
 
 	controller     SignupController
 	costumerParams SignupCustomerParams
+	ctx            context.Context
 }
 
 func (sc *SignupControllerSuite) SetupTest() {
 	sc.controller = SignupController{}
+	sc.ctx = context.Background()
 	sc.costumerParams = SignupCustomerParams{
 		TaxID: "93059283079",
 		Name:  "my company",
@@ -29,5 +32,31 @@ func (sc *SignupControllerSuite) SetupTest() {
 }
 
 func (sc *SignupControllerSuite) TestShouldReturnErrWhenTaxIDIsNotProvided() {
+	sc.costumerParams.TaxID = ""
 
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
+
+func (sc *SignupControllerSuite) TestShouldReturnErrWhenNameIsNotProvided() {
+	sc.costumerParams.Name = ""
+
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
+
+func (sc *SignupControllerSuite) TestShouldReturnErrWhenRoleIsNotProvided() {
+	sc.costumerParams.Role = ""
+
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
+
+func (sc *SignupControllerSuite) TestShouldReturnErrWhenPhoneIsNotProvided() {
+	sc.costumerParams.Phone = ""
+
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
+
+func (sc *SignupControllerSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
+	sc.costumerParams.Phone = ""
+
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
 }

@@ -11,16 +11,17 @@ type SignupController struct {
 }
 
 type SignupCustomerParams struct {
-	TaxID string              `json:"tax_id"`
-	Name  string              `json:"name"`
-	Role  models.CustomerRole `json:"role"`
-	Phone string              `json:"phone"`
-	Email string              `json:"email"`
+	TaxID string              `json:"tax_id" validate:"required"`
+	Name  string              `json:"name" validate:"required"`
+	Role  models.CustomerRole `json:"role" validate:"required"`
+	Phone string              `json:"phone" validate:"required"`
+	Email string              `json:"email" validate:"required"`
 }
 
 func (sc *SignupController) Control(ctx context.Context, customerParams SignupCustomerParams) error {
 	// call sanitizer.SanitizeTaxID
 	// call sanitizer.SanitizePhone
+	// sanitizer.Sanitizer
 
 	if err := validator.Validate(ctx, customerParams); err != nil {
 		return err
