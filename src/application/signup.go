@@ -13,7 +13,7 @@ type SignupController struct {
 type SignupCustomerParams struct {
 	TaxID string              `json:"tax_id" validate:"required"`
 	Name  string              `json:"name" validate:"required"`
-	Role  models.CustomerRole `json:"role" validate:"required"`
+	Role  models.CustomerRole `json:"role" validate:"required,oneof=SHIPPER RECEIVER"`
 	Phone string              `json:"phone" validate:"required"`
 	Email string              `json:"email" validate:"required"`
 }

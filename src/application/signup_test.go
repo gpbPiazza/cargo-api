@@ -60,3 +60,13 @@ func (sc *SignupControllerSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
 
 	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
 }
+
+func (sc *SignupControllerSuite) TestShouldReturnErrWhenRoleIsNotOneOfShipperOrReceiver() {
+	sc.costumerParams.Role = "ANY OTHER ROLE"
+
+	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
+
+func (sc *SignupControllerSuite) TestShouldReturnNoErrWhenAllIsOk() {
+	sc.NoError(sc.controller.Control(sc.ctx, sc.costumerParams))
+}
