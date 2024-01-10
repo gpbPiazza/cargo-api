@@ -2,6 +2,8 @@ package application
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -19,15 +21,26 @@ type SignUpAppSuite struct {
 	ctx          context.Context
 }
 
+func randomString(length int) string {
+	b := make([]byte, length)
+	_, err := rand.Read(b)
+	if err != nil {
+		panic(err)
+	}
+	return base64.StdEncoding.EncodeToString(b)
+}
+
 func (sa *SignUpAppSuite) SetupTest() {
+
 	sa.app = SignUpApp{}
 	sa.ctx = context.Background()
 	sa.SignUpParams = SignUpParams{
-		TaxID: "93059283079",
-		Name:  "my company",
-		Role:  "SHIPPER",
-		Phone: "7935919507",
-		Email: "my_company@gmail.com",
+		TaxID:    "93059283079",
+		Name:     "my company",
+		Role:     "SHIPPER",
+		Phone:    "7935919507",
+		Email:    "my_company@gmail.com",
+		Password: "1234567891020",
 	}
 }
 
@@ -75,6 +88,24 @@ func (sa *SignUpAppSuite) TestShouldReturnErrWhenEmailIsNotValid() {
 
 func (sa *SignUpAppSuite) TestShouldReturnErrWhenRoleIsNotOneOfShipperOrReceiver() {
 	sa.SignUpParams.Role = "ANY OTHER ROLE"
+
+	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
+}
+
+func (sa *SignUpAppSuite) TestShoudlReturnErrWhenPasswordIsNotProvided() {
+	sa.SignUpParams.Password = ""
+
+	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
+}
+
+func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsLessThan8Chars() {
+	sa.SignUpParams.Password = "1234"
+
+	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
+}
+
+func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsGreatedThan72Chars() {
+	sa.SignUpParams.Password = randomString(75)
 
 	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
 }
