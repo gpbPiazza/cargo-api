@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gpbPiazza/cargo-api/src/infrastructure/env"
+	"github.com/gpbPiazza/cargo-api/src/infrastructure/envs"
 )
 
 // https://pkg.go.dev/database/sql
@@ -15,7 +15,7 @@ import (
 var globalDB *sql.DB
 
 func Init() {
-	envs := env.Envs()
+	envs := envs.New()
 	driverName := fmt.Sprintf("driver-%s", envs.Database.Name)
 
 	db, err := sql.Open(driverName, envs.Database.Name)
