@@ -7,10 +7,10 @@ import (
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/validator"
 )
 
-type SignupController struct {
+type SignupApp struct {
 }
 
-type SignupCustomerParams struct {
+type SignupParams struct {
 	TaxID string              `json:"tax_id" validate:"required"`
 	Name  string              `json:"name" validate:"required"`
 	Role  models.CustomerRole `json:"role" validate:"required,oneof=SHIPPER RECEIVER"`
@@ -18,7 +18,7 @@ type SignupCustomerParams struct {
 	Email string              `json:"email" validate:"required"`
 }
 
-func (sc *SignupController) Control(ctx context.Context, customerParams SignupCustomerParams) error {
+func (sc *SignupApp) Signup(ctx context.Context, customerParams SignupParams) error {
 	// call sanitizer.SanitizeTaxID
 	// call sanitizer.SanitizePhone
 	// sanitizer.Sanitizer

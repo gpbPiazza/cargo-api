@@ -7,22 +7,22 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestSignupController_Control(t *testing.T) {
-	suite.Run(t, new(SignupControllerSuite))
+func TestSignupApp_Signup(t *testing.T) {
+	suite.Run(t, new(SignupAppSuite))
 }
 
-type SignupControllerSuite struct {
+type SignupAppSuite struct {
 	suite.Suite
 
-	controller     SignupController
-	costumerParams SignupCustomerParams
-	ctx            context.Context
+	app          SignupApp
+	signupParams SignupParams
+	ctx          context.Context
 }
 
-func (sc *SignupControllerSuite) SetupTest() {
-	sc.controller = SignupController{}
-	sc.ctx = context.Background()
-	sc.costumerParams = SignupCustomerParams{
+func (sa *SignupAppSuite) SetupTest() {
+	sa.app = SignupApp{}
+	sa.ctx = context.Background()
+	sa.signupParams = SignupParams{
 		TaxID: "93059283079",
 		Name:  "my company",
 		Role:  "SHIPPER",
@@ -31,42 +31,42 @@ func (sc *SignupControllerSuite) SetupTest() {
 	}
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenTaxIDIsNotProvided() {
-	sc.costumerParams.TaxID = ""
+func (sa *SignupAppSuite) TestShouldReturnErrWhenTaxIDIsNotProvided() {
+	sa.signupParams.TaxID = ""
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenNameIsNotProvided() {
-	sc.costumerParams.Name = ""
+func (sa *SignupAppSuite) TestShouldReturnErrWhenNameIsNotProvided() {
+	sa.signupParams.Name = ""
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenRoleIsNotProvided() {
-	sc.costumerParams.Role = ""
+func (sa *SignupAppSuite) TestShouldReturnErrWhenRoleIsNotProvided() {
+	sa.signupParams.Role = ""
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenPhoneIsNotProvided() {
-	sc.costumerParams.Phone = ""
+func (sa *SignupAppSuite) TestShouldReturnErrWhenPhoneIsNotProvided() {
+	sa.signupParams.Phone = ""
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
-	sc.costumerParams.Phone = ""
+func (sa *SignupAppSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
+	sa.signupParams.Phone = ""
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnErrWhenRoleIsNotOneOfShipperOrReceiver() {
-	sc.costumerParams.Role = "ANY OTHER ROLE"
+func (sa *SignupAppSuite) TestShouldReturnErrWhenRoleIsNotOneOfShipperOrReceiver() {
+	sa.signupParams.Role = "ANY OTHER ROLE"
 
-	sc.Error(sc.controller.Control(sc.ctx, sc.costumerParams))
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
-func (sc *SignupControllerSuite) TestShouldReturnNoErrWhenAllIsOk() {
-	sc.NoError(sc.controller.Control(sc.ctx, sc.costumerParams))
+func (sa *SignupAppSuite) TestShouldReturnNoErrWhenAllIsOk() {
+	sa.NoError(sa.app.Signup(sa.ctx, sa.signupParams))
 }
