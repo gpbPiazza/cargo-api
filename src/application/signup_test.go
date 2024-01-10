@@ -62,7 +62,13 @@ func (sa *SignupAppSuite) TestShouldReturnErrWhenPhoneIsNotProvided() {
 }
 
 func (sa *SignupAppSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
-	sa.signupParams.Phone = ""
+	sa.signupParams.Email = ""
+
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
+}
+
+func (sa *SignupAppSuite) TestShouldReturnErrWhenEmailIsNotValid() {
+	sa.signupParams.Email = "my_email@.com"
 
 	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
