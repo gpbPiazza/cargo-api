@@ -37,6 +37,12 @@ func (sa *SignupAppSuite) TestShouldReturnErrWhenTaxIDIsNotProvided() {
 	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
 }
 
+func (sa *SignupAppSuite) TestShouldReturnErrWhenTaxIDIsInvalid() {
+	sa.signupParams.TaxID = "000.000.000-00"
+
+	sa.Error(sa.app.Signup(sa.ctx, sa.signupParams))
+}
+
 func (sa *SignupAppSuite) TestShouldReturnErrWhenNameIsNotProvided() {
 	sa.signupParams.Name = ""
 

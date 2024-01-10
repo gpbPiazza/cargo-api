@@ -11,7 +11,7 @@ type SignupApp struct {
 }
 
 type SignupParams struct {
-	TaxID string              `json:"tax_id" validate:"required"`
+	TaxID string              `json:"tax_id" validate:"required,validate-tax-id"`
 	Name  string              `json:"name" validate:"required"`
 	Role  models.CustomerRole `json:"role" validate:"required,oneof=SHIPPER RECEIVER"`
 	Phone string              `json:"phone" validate:"required"`
@@ -23,7 +23,7 @@ func (sc *SignupApp) Signup(ctx context.Context, customerParams SignupParams) er
 	// call sanitizer.SanitizePhone
 	// sanitizer.Sanitizer
 
-	if err := validator.Validate(ctx, customerParams); err != nil {
+	if err := validator.Validate(ctx, customerParams, validator.ValidateTaxID); err != nil {
 		return err
 	}
 
