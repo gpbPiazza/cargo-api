@@ -2,8 +2,6 @@ package application
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base64"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -21,17 +19,7 @@ type SignUpAppSuite struct {
 	ctx          context.Context
 }
 
-func randomString(length int) string {
-	b := make([]byte, length)
-	_, err := rand.Read(b)
-	if err != nil {
-		panic(err)
-	}
-	return base64.StdEncoding.EncodeToString(b)
-}
-
 func (sa *SignUpAppSuite) SetupTest() {
-
 	sa.app = SignUpApp{}
 	sa.ctx = context.Background()
 	sa.SignUpParams = SignUpParams{
@@ -105,7 +93,7 @@ func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsLessThan8Chars() {
 }
 
 func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsGreatedThan72Chars() {
-	sa.SignUpParams.Password = randomString(75)
+	sa.SignUpParams.Password = string(make([]byte, 80))
 
 	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
 }

@@ -1,9 +1,36 @@
 package repositories
 
-import "github.com/google/uuid"
+import (
+	"context"
 
-type CustomerRepository struct{}
+	"github.com/google/uuid"
+)
 
-func (cr CustomerRepository) FindByID(ID uuid.UUID)           {}
-func (cr CustomerRepository) FindByName(name string)          {}
-func (cr CustomerRepository) FindByCargoTrackingID(ID string) {}
+type CustomerRepository interface {
+	FindByID(ctx context.Context, ID uuid.UUID)
+	FindByTaxID(ctx context.Context, taxID string)
+	FindByName(ctx context.Context, name string)
+	FindByCargoTrackingID(ctx context.Context, ID string)
+}
+
+type customerRepository struct{}
+
+func NewCustomerRepository() CustomerRepository {
+	return &customerRepository{}
+}
+
+func (cr *customerRepository) FindByTaxID(ctx context.Context, taxID string) {
+
+}
+
+func (cr *customerRepository) FindByID(ctx context.Context, ID uuid.UUID) {
+	panic("implement me")
+}
+
+func (cr *customerRepository) FindByName(ctx context.Context, name string) {
+	panic("implement me")
+}
+
+func (cr *customerRepository) FindByCargoTrackingID(ctx context.Context, ID string) {
+	panic("implement me")
+}
