@@ -14,9 +14,9 @@ func isValidTaxID(taxID string) bool {
 	return validateCFP(taxID)
 }
 
-func isCPF(taxID string) bool {
-	return len(clearMask(taxID)) == cpfLen
-}
+// func isCPF(taxID string) bool {
+// 	return len(clearMask(taxID)) == cpfLen
+// }
 
 func clearMask(taxID string) string {
 	taxIDCopy := taxID

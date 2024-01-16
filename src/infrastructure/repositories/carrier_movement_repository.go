@@ -7,5 +7,5 @@ import (
 
 type CarrierMovementRepository struct{}
 
-func (cmr CarrierMovementRepository) FindByScheduleID(ID uuid.UUID)
-func (cmr CarrierMovementRepository) FindByLocation(from, to models.Location)
+func (cmr CarrierMovementRepository) FindByScheduleID(ID uuid.UUID)           {}
+func (cmr CarrierMovementRepository) FindByLocation(from, to models.Location) {}
