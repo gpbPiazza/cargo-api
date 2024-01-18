@@ -15,7 +15,7 @@ type EnvsSuite struct {
 	suite.Suite
 }
 
-func (es *EnvsSuite) SetupTest() {
+func (es *EnvsSuite) SetupSubTest() {
 	es.initMockDataBaseEnv()
 	err := os.Setenv("SERVER_PORT", "9190")
 	es.NoError(err)
@@ -44,25 +44,27 @@ func (es *EnvsSuite) initMockDataBaseEnv() {
 	es.NoError(err)
 }
 
-func (es *EnvsSuite) TestShouldPanicWhenSomeEnvWithNotEmptyTagIsNotSeted() {
-	os.Clearenv()
+func (es *EnvsSuite) TestNewEnvs() {
+	es.Run("should panic when some env with not empty tag is not seted", func() {
+		os.Clearenv()
 
-	newEnvs := func() { _ = New() }
+		newEnvs := func() { _ = New() }
 
-	es.Panics(newEnvs)
-}
+		es.Panics(newEnvs)
+	})
 
-func (es *EnvsSuite) TestShouldRunOkWhenAllEnvsAreSeted() {
-	newEnvs := func() {
-		_ = New()
-	}
+	es.Run("should run ok when all envs are seted", func() {
+		newEnvs := func() {
 
-	es.NotPanics(newEnvs)
-}
+			_ = New()
+		}
+		es.NotPanics(newEnvs)
+	})
 
-func (es *EnvsSuite) TestShouldReturnTheSameEnvInstanceReferenceWhenCalledNewTwice() {
-	expectedEnv := New()
-	newEnv := New()
+	es.Run("should return the same env instance reference when called new twice", func() {
+		expectedEnv := New()
+		newEnv := New()
 
-	es.Equal(expectedEnv, newEnv)
+		es.Equal(expectedEnv, newEnv)
+	})
 }

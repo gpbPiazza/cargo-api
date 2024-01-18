@@ -29,9 +29,6 @@ func (cr *customerRepository) FindByTaxID(ctx context.Context, taxID string) {
 		// TODO:
 	}
 
-	// TODO: how to make repository not depende from domain layer to scan data model?
-	// should i create a DB Model where a aways return the DB model and in domain layer i translate
-	// db model to domain Model, using the factories? i will read more about it
 	// return row.Scan(&models.Customer{})
 }
 
