@@ -21,18 +21,20 @@ type validateSuite struct {
 	structToValidate structToValidate
 }
 
-func (v *validateSuite) SetupTest() {
+func (v *validateSuite) SetupSubTest() {
 	v.structToValidate = structToValidate{
 		Name:  "my name",
 		Email: "my_email@gmail.com",
 	}
 }
 
-func (v *validateSuite) TestShouldReturnErrWhenRequiredFieldIsNotProvided() {
-	v.structToValidate.Name = ""
-	v.Error(Validate(context.Background(), v.structToValidate))
-}
+func (v *validateSuite) TestValidate() {
+	v.Run("should return err when required field is not provided", func() {
+		v.structToValidate.Name = ""
+		v.Error(Validate(context.Background(), v.structToValidate))
+	})
 
-func (v *validateSuite) TestShouldNotReturnErrWhenAllFieldsAreProvided() {
-	v.NoError(Validate(context.Background(), v.structToValidate))
+	v.Run("should not return err when all fields are provided", func() {
+		v.NoError(Validate(context.Background(), v.structToValidate))
+	})
 }

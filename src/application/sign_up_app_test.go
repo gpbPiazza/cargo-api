@@ -7,22 +7,22 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestSignUpApp_SignUp(t *testing.T) {
-	suite.Run(t, new(SignUpAppSuite))
+func TestSignupApp_Signup(t *testing.T) {
+	suite.Run(t, new(SignupAppSuite))
 }
 
-type SignUpAppSuite struct {
+type SignupAppSuite struct {
 	suite.Suite
 
-	app          SignUpApp
-	SignUpParams SignUpParams
+	app          SignupApp
+	SignupParams SignupParams
 	ctx          context.Context
 }
 
-func (sa *SignUpAppSuite) SetupTest() {
-	sa.app = SignUpApp{}
+func (sa *SignupAppSuite) SetupSubTest() {
+	sa.app = SignupApp{}
 	sa.ctx = context.Background()
-	sa.SignUpParams = SignUpParams{
+	sa.SignupParams = SignupParams{
 		TaxID:    "93059283079",
 		Name:     "my company",
 		Role:     "SHIPPER",
@@ -32,72 +32,74 @@ func (sa *SignUpAppSuite) SetupTest() {
 	}
 }
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenTaxIDIsNotProvided() {
-	sa.SignUpParams.TaxID = ""
+func (sa *SignupAppSuite) TestSignup() {
+	sa.Run("should return err when tax id is not provided", func() {
+		sa.SignupParams.TaxID = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenTaxIDIsInvalid() {
-	sa.SignUpParams.TaxID = "000.000.000-00"
+	sa.Run("should return err when tax id is invalid", func() {
+		sa.SignupParams.TaxID = "000.000.000-00"
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenNameIsNotProvided() {
-	sa.SignUpParams.Name = ""
+	sa.Run("should return err when name is not provided", func() {
+		sa.SignupParams.Name = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenRoleIsNotProvided() {
-	sa.SignUpParams.Role = ""
+	sa.Run("should return err when role is not provided", func() {
+		sa.SignupParams.Role = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenPhoneIsNotProvided() {
-	sa.SignUpParams.Phone = ""
+	sa.Run("should return err when phone is not provided", func() {
+		sa.SignupParams.Phone = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenEmailIsNotProvided() {
-	sa.SignUpParams.Email = ""
+	sa.Run("should return err when email is not provided", func() {
+		sa.SignupParams.Email = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenEmailIsNotValid() {
-	sa.SignUpParams.Email = "my_email@.com"
+	sa.Run("should return err when email is not valid", func() {
+		sa.SignupParams.Email = "my_email@.com"
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnErrWhenRoleIsNotOneOfShipperOrReceiver() {
-	sa.SignUpParams.Role = "ANY OTHER ROLE"
+	sa.Run("should return err when role is not one of shipper or receiver", func() {
+		sa.SignupParams.Role = "ANY OTHER ROLE"
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShoudlReturnErrWhenPasswordIsNotProvided() {
-	sa.SignUpParams.Password = ""
+	sa.Run("should return err when password is not provided", func() {
+		sa.SignupParams.Password = ""
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsLessThan8Chars() {
-	sa.SignUpParams.Password = "1234"
+	sa.Run("should return err if password is less than 8 chars", func() {
+		sa.SignupParams.Password = "1234"
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShoudlReturnErrIfPasswordIsGreatedThan72Chars() {
-	sa.SignUpParams.Password = string(make([]byte, 80))
+	sa.Run("should return err if password is greated than 72 chars", func() {
+		sa.SignupParams.Password = string(make([]byte, 80))
 
-	sa.Error(sa.app.SignUp(sa.ctx, sa.SignUpParams))
-}
+		sa.Error(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 
-func (sa *SignUpAppSuite) TestShouldReturnNoErrWhenAllIsOk() {
-	sa.NoError(sa.app.SignUp(sa.ctx, sa.SignUpParams))
+	sa.Run("should return no err when all is ok", func() {
+		sa.NoError(sa.app.Signup(sa.ctx, sa.SignupParams))
+	})
 }
