@@ -12,3 +12,7 @@ cover/read:
 
 cover/read/html: 
 	go tool cover -html=./${FILE_COVER}
+
+# TODO: make this generic to only need to provide interface location
+# mocks:
+# 	mockgen -source=./src/domain/customer/serivce_signup.go -destination=./tests/mocks/mocks.go -package=mocks
