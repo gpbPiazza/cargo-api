@@ -1,14 +1,10 @@
-package application
+package usecases
 
 import (
 	"context"
 
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
-	"github.com/gpbPiazza/cargo-api/src/infrastructure/validator"
 )
-
-type SignupApp struct {
-}
 
 type SignupParams struct {
 	TaxID    string              `json:"tax_id" validate:"required,validate-tax-id"`
@@ -19,16 +15,6 @@ type SignupParams struct {
 	Password string              `json:"password" validate:"required,lte=72,gte=8"` // TODO: IMPROVE PASSWORD VALIDATION require especial characters, min numbers, min capital letters
 }
 
-func (sc *SignupApp) Signup(ctx context.Context, customerParams SignupParams) error {
-	// TODO: call sanitizer.SanitizeInput
-
-	if err := validator.Validate(ctx, customerParams, validator.ValidateTaxID); err != nil {
-		return err
-	}
-
-	// chama o serviço de criar um costumer
-
-	// return
-
-	return nil
+type SignupService interface {
+	Register(ctx context.Context, params SignupParams) error
 }

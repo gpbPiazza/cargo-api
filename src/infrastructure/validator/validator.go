@@ -29,7 +29,7 @@ func Validate(ctx context.Context, object interface{}, tagRules ...tagRule) erro
 	}
 
 	for _, validationError := range validationErrors {
-		// TODO: IMPLEMENT ERR CONSTRUCTION
+		// TODO: IMPLEMENT a better ERR CONSTRUCTION
 		fmt.Println(validationError)
 	}
 
