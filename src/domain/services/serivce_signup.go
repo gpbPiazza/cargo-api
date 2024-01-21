@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/validator"
@@ -40,14 +42,25 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 		return ErrPasswordTooLong
 	}
 
-	customer, err := ss.findCustomer.FindByTaxID(ctx, params.TaxID)
+	customerFound, err := ss.findCustomer.FindByTaxID(ctx, params.TaxID)
 	if err != nil && !errors.Is(err, errs.ErrNotFound) {
 		return err
 	}
 
-	if customer.TaxID == params.TaxID {
+	if customerFound.TaxID == params.TaxID {
 		return ErrCustomerAlreadyRegistered
 	}
+
+	hashedPassword, err := ss.hasherService.Hash(params.Password)
+	if err != nil {
+		return err
+	}
+
+	customer := models.Customer{
+		Password: hashedPassword,
+	}
+
+	fmt.Println(customer)
 
 	// TODO: CREATE CUSTOMER_MODEL by "usecases.SignupParams"
 	// TODO: CALL REPOSITORY TO SAVE CUSTOMER MODEL

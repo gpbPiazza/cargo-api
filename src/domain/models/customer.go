@@ -18,11 +18,12 @@ const (
 
 type Customer struct {
 	metadata.Data
-	TaxID   string
-	Name    string
-	Type    CustomerType
-	Role    CustomerRole
-	Contact CustomerContact
+	TaxID    string
+	Name     string
+	Password string
+	Type     CustomerType
+	Role     CustomerRole
+	Contact  CustomerContact
 }
 
 // Object value

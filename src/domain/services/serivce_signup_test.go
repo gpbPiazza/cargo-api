@@ -21,6 +21,7 @@ type signupServiceSuite struct {
 
 	serivce                *signupService
 	findCustomerRepository *mocks.MockFindCustomerRepository
+	hasherService          *mocks.MockHasher
 	SignupParams           usecases.SignupParams
 	ctx                    context.Context
 }
@@ -38,14 +39,21 @@ func (ss *signupServiceSuite) SetupSubTest() {
 
 	ctrl := gomock.NewController(ss.T(), gomock.WithOverridableExpectations())
 	ss.findCustomerRepository = mocks.NewMockFindCustomerRepository(ctrl)
-	// ss.hasherService = mocks.NewMockHasherService(ctrl)
+	ss.hasherService = mocks.NewMockHasher(ctrl)
+
 	ss.findCustomerRepository.
 		EXPECT().
 		FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
 		AnyTimes().
 		Return(models.Customer{}, nil)
 
-	ss.serivce = NewSignupService(ss.findCustomerRepository, nil)
+	ss.hasherService.
+		EXPECT().
+		Hash(ss.SignupParams.Password).
+		AnyTimes().
+		Return("hashed_password", nil)
+
+	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService)
 }
 
 func (ss *signupServiceSuite) TestSignup() {
@@ -136,7 +144,22 @@ func (ss *signupServiceSuite) TestSignup() {
 			FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
 			Return(models.Customer{}, assert.AnError)
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Require().Error(err)
+		ss.Equal(assert.AnError, err)
+	})
+
+	ss.Run("should return err when hasherService returns any err", func() {
+		ss.hasherService.
+			EXPECT().
+			Hash(ss.SignupParams.Password).
+			Return("", assert.AnError)
+
+		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Require().Error(err)
+		ss.Equal(assert.AnError, err)
 	})
 
 	ss.Run("should return err when findCustomerRepository founds a customer", func() {
