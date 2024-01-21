@@ -38,13 +38,14 @@ func (ss *signupServiceSuite) SetupSubTest() {
 
 	ctrl := gomock.NewController(ss.T(), gomock.WithOverridableExpectations())
 	ss.findCustomerRepository = mocks.NewMockFindCustomerRepository(ctrl)
+	// ss.hasherService = mocks.NewMockHasherService(ctrl)
 	ss.findCustomerRepository.
 		EXPECT().
 		FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
 		AnyTimes().
 		Return(models.Customer{}, nil)
 
-	ss.serivce = NewSignupService(ss.findCustomerRepository)
+	ss.serivce = NewSignupService(ss.findCustomerRepository, nil)
 }
 
 func (ss *signupServiceSuite) TestSignup() {
@@ -108,13 +109,21 @@ func (ss *signupServiceSuite) TestSignup() {
 		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
 	})
 
-	ss.Run("should return err if password is greated than 72 chars", func() {
+	ss.Run("should return err if password is too long than 72 chars", func() {
 		ss.SignupParams.Password = string(make([]byte, 80))
 
 		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
+		ss.Require().Error(err)
 		ss.Equal("Key: 'SignupParams.Password' Error:Field validation for 'Password' failed on the 'lte' tag", err.Error())
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+	})
+
+	ss.Run("should return err if password bytes length longer than 72 bytes", func() {
+		ss.SignupParams.Password = "😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁"
+
+		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Equal(ErrPasswordTooLong, err)
 	})
 
 	ss.Run("should return no err when all is ok", func() {
