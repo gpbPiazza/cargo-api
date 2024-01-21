@@ -3,9 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 
-	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/validator"
@@ -21,14 +19,16 @@ var (
 )
 
 type signupService struct {
-	findCustomer  usecases.FindCustomerRepository
-	hasherService usecases.Hasher
+	finderCustomer usecases.FinderCustomerRepository
+	hasher         usecases.Hasher
+	factory        usecases.CustomerFactory
 }
 
-func NewSignupService(findCustomer usecases.FindCustomerRepository, hasherService usecases.Hasher) *signupService {
+func NewSignupService(findCustomer usecases.FinderCustomerRepository, hasherService usecases.Hasher, customerFactory usecases.CustomerFactory) *signupService {
 	return &signupService{
-		findCustomer:  findCustomer,
-		hasherService: hasherService,
+		finderCustomer: findCustomer,
+		hasher:         hasherService,
+		factory:        customerFactory,
 	}
 }
 
@@ -42,7 +42,7 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 		return ErrPasswordTooLong
 	}
 
-	customerFound, err := ss.findCustomer.FindByTaxID(ctx, params.TaxID)
+	customerFound, err := ss.finderCustomer.FindByTaxID(ctx, params.TaxID)
 	if err != nil && !errors.Is(err, errs.ErrNotFound) {
 		return err
 	}
@@ -51,16 +51,12 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 		return ErrCustomerAlreadyRegistered
 	}
 
-	hashedPassword, err := ss.hasherService.Hash(params.Password)
+	hashedPassword, err := ss.hasher.Hash(params.Password)
 	if err != nil {
 		return err
 	}
 
-	customer := models.Customer{
-		Password: hashedPassword,
-	}
-
-	fmt.Println(customer)
+	ss.factory.Make(params, hashedPassword)
 
 	// TODO: CREATE CUSTOMER_MODEL by "usecases.SignupParams"
 	// TODO: CALL REPOSITORY TO SAVE CUSTOMER MODEL

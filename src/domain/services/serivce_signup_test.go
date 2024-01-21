@@ -53,7 +53,7 @@ func (ss *signupServiceSuite) SetupSubTest() {
 		AnyTimes().
 		Return("hashed_password", nil)
 
-	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService)
+	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService, nil)
 }
 
 func (ss *signupServiceSuite) TestSignup() {
