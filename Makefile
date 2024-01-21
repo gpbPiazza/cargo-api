@@ -15,4 +15,4 @@ cover/read/html:
 
 # TODO: make this generic to only need to provide interface location
 # mocks:
-# 	mockgen -source=./src/domain/customer/serivce_signup.go -destination=./tests/mocks/mocks.go -package=mocks
+# 	mockgen -source=./src/domain/usecases/find_customer_by_tax_id.go -destination=./tests/mocks/mocks.go -package=mocks
