@@ -1,5 +1,5 @@
 package usecases
 
-type TaxIDIdentifier interface {
+type TaxIDIdentifierService interface {
 	IdentifyPersonTaxID(taxID string) bool
 }

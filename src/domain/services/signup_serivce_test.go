@@ -22,11 +22,14 @@ type signupServiceSuite struct {
 	serivce                *signupService
 	findCustomerRepository *mocks.MockFindCustomerRepository
 	hasherService          *mocks.MockHasher
-	SignupParams           usecases.SignupParams
-	ctx                    context.Context
+	customerFactory        *mocks.MockCustomerFactory
+
+	SignupParams usecases.SignupParams
+	ctx          context.Context
 }
 
 func (ss *signupServiceSuite) SetupSubTest() {
+	hashedPassword := "hashed_password"
 	ss.SignupParams = usecases.SignupParams{
 		TaxID:    "93059283079",
 		Name:     "my company",
@@ -40,6 +43,7 @@ func (ss *signupServiceSuite) SetupSubTest() {
 	ctrl := gomock.NewController(ss.T(), gomock.WithOverridableExpectations())
 	ss.findCustomerRepository = mocks.NewMockFindCustomerRepository(ctrl)
 	ss.hasherService = mocks.NewMockHasher(ctrl)
+	ss.customerFactory = mocks.NewMockCustomerFactory(ctrl)
 
 	ss.findCustomerRepository.
 		EXPECT().
@@ -51,9 +55,15 @@ func (ss *signupServiceSuite) SetupSubTest() {
 		EXPECT().
 		Hash(ss.SignupParams.Password).
 		AnyTimes().
-		Return("hashed_password", nil)
+		Return(hashedPassword, nil)
 
-	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService, nil)
+	ss.customerFactory.
+		EXPECT().
+		Make(ss.SignupParams, hashedPassword).
+		AnyTimes().
+		Return(models.Customer{})
+
+	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService, ss.customerFactory)
 }
 
 func (ss *signupServiceSuite) TestSignup() {

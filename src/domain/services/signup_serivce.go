@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
+
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/validator"
 )
@@ -22,6 +23,7 @@ type signupService struct {
 	finderCustomer usecases.FinderCustomerRepository
 	hasher         usecases.Hasher
 	factory        usecases.CustomerFactory
+	saverCustomer  usecases.CreatorCustomerRepository
 }
 
 func NewSignupService(

@@ -19,7 +19,7 @@ type CustomerFactorySuite struct {
 	suite.Suite
 
 	factory    customerFactory
-	identifier *mocks.MockTaxIDIdentifier
+	identifier *mocks.MockTaxIDIdentifierService
 	params     usecases.SignupParams
 	customer   models.Customer
 	password   string
@@ -27,7 +27,7 @@ type CustomerFactorySuite struct {
 
 func (cf *CustomerFactorySuite) SetupSubTest() {
 	ctrl := gomock.NewController(cf.T())
-	cf.identifier = mocks.NewMockTaxIDIdentifier(ctrl)
+	cf.identifier = mocks.NewMockTaxIDIdentifierService(ctrl)
 
 	cf.params = usecases.SignupParams{
 		TaxID:    "93059283079",

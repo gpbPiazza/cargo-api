@@ -6,10 +6,10 @@ import (
 )
 
 type customerFactory struct {
-	identifier usecases.TaxIDIdentifier
+	identifier usecases.TaxIDIdentifierService
 }
 
-func NewCustomerFactory(identifier usecases.TaxIDIdentifier) *customerFactory {
+func NewCustomerFactory(identifier usecases.TaxIDIdentifierService) *customerFactory {
 	return &customerFactory{
 		identifier: identifier,
 	}
