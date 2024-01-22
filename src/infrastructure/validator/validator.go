@@ -16,15 +16,8 @@ func init() {
 	}
 
 	validate = validator.New()
-	validate.RegisterTagNameFunc(setJSONTagsIntoErrMessages)
 
-	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
-		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-		if name == "-" {
-			return ""
-		}
-		return name
-	})
+	validate.RegisterTagNameFunc(setJSONTagsIntoErrMessages)
 
 	for tag := range customValidatorsTags {
 		_ = validate.RegisterValidation(tag.string(), tag.customValidator())
