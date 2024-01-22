@@ -22,7 +22,7 @@ func (cf *customerFactory) Make(params usecases.SignupParams, password string) m
 		customerType = models.PERSON_CT
 	}
 
-	result := models.Customer{
+	customer := &models.Customer{
 		TaxID: params.TaxID,
 		Name:  params.Name,
 		Type:  customerType,
@@ -34,5 +34,7 @@ func (cf *customerFactory) Make(params usecases.SignupParams, password string) m
 		Password: password,
 	}
 
-	return result
+	customer.NewID()
+
+	return *customer
 }

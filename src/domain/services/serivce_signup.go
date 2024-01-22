@@ -24,7 +24,10 @@ type signupService struct {
 	factory        usecases.CustomerFactory
 }
 
-func NewSignupService(findCustomer usecases.FinderCustomerRepository, hasherService usecases.Hasher, customerFactory usecases.CustomerFactory) *signupService {
+func NewSignupService(
+	findCustomer usecases.FinderCustomerRepository,
+	hasherService usecases.Hasher,
+	customerFactory usecases.CustomerFactory) *signupService {
 	return &signupService{
 		finderCustomer: findCustomer,
 		hasher:         hasherService,
@@ -56,7 +59,7 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 		return err
 	}
 
-	ss.factory.Make(params, hashedPassword)
+	_ = ss.factory.Make(params, hashedPassword)
 
 	// TODO: CREATE CUSTOMER_MODEL by "usecases.SignupParams"
 	// TODO: CALL REPOSITORY TO SAVE CUSTOMER MODEL

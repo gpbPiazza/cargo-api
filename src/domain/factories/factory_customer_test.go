@@ -3,6 +3,7 @@ package customer
 import (
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
 	"github.com/gpbPiazza/cargo-api/tests/mocks"
@@ -63,6 +64,8 @@ func (cf *CustomerFactorySuite) TestCasesMake() {
 
 		cf.Require().NotEmpty(got)
 		cf.Equal(models.COMPANY_CT, got.Type)
+		cf.NotEmpty(got.ID)
+		got.ID = uuid.Nil
 		cf.Equal(expected, got)
 	})
 
@@ -76,6 +79,8 @@ func (cf *CustomerFactorySuite) TestCasesMake() {
 
 		cf.Require().NotEmpty(got)
 		cf.Equal(models.PERSON_CT, got.Type)
+		cf.NotEmpty(got.ID)
+		got.ID = uuid.Nil
 		cf.Equal(expected, got)
 	})
 }

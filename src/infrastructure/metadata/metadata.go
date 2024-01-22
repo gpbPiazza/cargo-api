@@ -12,3 +12,7 @@ type Data struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
+
+func (d *Data) NewID() {
+	d.ID = uuid.New()
+}
