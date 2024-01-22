@@ -40,7 +40,7 @@ func NewSignupService(
 }
 
 func (ss *signupService) Register(ctx context.Context, params usecases.SignupParams) error {
-	if err := validator.Validate(ctx, params, validator.ValidateTaxID); err != nil {
+	if err := validator.Validate(ctx, params); err != nil {
 		return err
 	}
 

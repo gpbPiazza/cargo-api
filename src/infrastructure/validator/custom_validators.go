@@ -6,24 +6,24 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type tagRule string
+type validatorTag string
 
 const (
-	ValidateTaxID tagRule = "validate-tax-id"
+	tagValidateTaxID validatorTag = "validate-tax-id"
 )
 
 var (
-	customeValidatorsTagFunc = map[tagRule]func(fl validator.FieldLevel) bool{
-		ValidateTaxID: validateTaxID,
+	customValidatorsTags = map[validatorTag]func(fl validator.FieldLevel) bool{
+		tagValidateTaxID: validateTaxID,
 	}
 )
 
-func (tr tagRule) string() string {
+func (tr validatorTag) string() string {
 	return string(tr)
 }
 
-func (tr tagRule) customValidator() func(fl validator.FieldLevel) bool {
-	customValidator, ok := customeValidatorsTagFunc[tr]
+func (tr validatorTag) customValidator() func(fl validator.FieldLevel) bool {
+	customValidator, ok := customValidatorsTags[tr]
 	if !ok {
 		customValidator = defaultValidatorAlwaysReturnErr
 	}
