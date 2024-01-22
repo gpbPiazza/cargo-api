@@ -20,20 +20,22 @@ var (
 )
 
 type signupService struct {
-	finderCustomer usecases.FinderCustomerRepository
-	hasher         usecases.Hasher
-	factory        usecases.CustomerFactory
-	saverCustomer  usecases.CreatorCustomerRepository
+	finderCustomer  usecases.FinderCustomerRepository
+	hasher          usecases.Hasher
+	factory         usecases.CustomerFactory
+	creatorCustomer usecases.CreatorCustomerRepository
 }
 
 func NewSignupService(
 	findCustomer usecases.FinderCustomerRepository,
 	hasherService usecases.Hasher,
-	customerFactory usecases.CustomerFactory) *signupService {
+	customerFactory usecases.CustomerFactory,
+	creatorCustomer usecases.CreatorCustomerRepository) *signupService {
 	return &signupService{
-		finderCustomer: findCustomer,
-		hasher:         hasherService,
-		factory:        customerFactory,
+		finderCustomer:  findCustomer,
+		hasher:          hasherService,
+		factory:         customerFactory,
+		creatorCustomer: creatorCustomer,
 	}
 }
 
@@ -61,9 +63,11 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 		return err
 	}
 
-	_ = ss.factory.Make(params, hashedPassword)
+	customer := ss.factory.Make(params, hashedPassword)
 
-	// TODO: CALL REPOSITORY TO SAVE CUSTOMER MODEL
+	if err := ss.creatorCustomer.Create(ctx, customer); err != nil {
+		return err
+	}
 
 	return nil
 }

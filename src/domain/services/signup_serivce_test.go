@@ -23,6 +23,7 @@ type signupServiceSuite struct {
 	findCustomerRepository *mocks.MockFindCustomerRepository
 	hasherService          *mocks.MockHasher
 	customerFactory        *mocks.MockCustomerFactory
+	creatorCustomer        *mocks.MockCreatorCustomerRepository
 
 	SignupParams usecases.SignupParams
 	ctx          context.Context
@@ -44,10 +45,11 @@ func (ss *signupServiceSuite) SetupSubTest() {
 	ss.findCustomerRepository = mocks.NewMockFindCustomerRepository(ctrl)
 	ss.hasherService = mocks.NewMockHasher(ctrl)
 	ss.customerFactory = mocks.NewMockCustomerFactory(ctrl)
+	ss.creatorCustomer = mocks.NewMockCreatorCustomerRepository(ctrl)
 
 	ss.findCustomerRepository.
 		EXPECT().
-		FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
+		FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
 		AnyTimes().
 		Return(models.Customer{}, nil)
 
@@ -63,7 +65,18 @@ func (ss *signupServiceSuite) SetupSubTest() {
 		AnyTimes().
 		Return(models.Customer{})
 
-	ss.serivce = NewSignupService(ss.findCustomerRepository, ss.hasherService, ss.customerFactory)
+	ss.creatorCustomer.
+		EXPECT().
+		Create(ss.ctx, models.Customer{}).
+		AnyTimes().
+		Return(nil)
+
+	ss.serivce = NewSignupService(
+		ss.findCustomerRepository,
+		ss.hasherService,
+		ss.customerFactory,
+		ss.creatorCustomer,
+	)
 }
 
 func (ss *signupServiceSuite) TestSignup() {
@@ -151,7 +164,7 @@ func (ss *signupServiceSuite) TestSignup() {
 	ss.Run("should return err when findCustomerRepository returns any err that is not errNotFound", func() {
 		ss.findCustomerRepository.
 			EXPECT().
-			FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
+			FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
 			Return(models.Customer{}, assert.AnError)
 
 		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
@@ -175,12 +188,24 @@ func (ss *signupServiceSuite) TestSignup() {
 	ss.Run("should return err when findCustomerRepository founds a customer", func() {
 		ss.findCustomerRepository.
 			EXPECT().
-			FindByTaxID(gomock.Any(), ss.SignupParams.TaxID).
+			FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
 			Return(models.Customer{TaxID: ss.SignupParams.TaxID}, nil)
 
 		got := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
 		ss.Error(got)
 		ss.Equal(ErrCustomerAlreadyRegistered, got)
+	})
+
+	ss.Run("should return err when creatorCustomerRepository returns err", func() {
+		ss.creatorCustomer.
+			EXPECT().
+			Create(ss.ctx, models.Customer{}).
+			Return(assert.AnError)
+
+		got := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(got)
+		ss.Equal(assert.AnError, got)
 	})
 }
