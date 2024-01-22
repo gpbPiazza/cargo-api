@@ -146,7 +146,7 @@ func (ss *signupServiceSuite) TestSignup() {
 		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
 		ss.Require().Error(err)
-		ss.Equal("Key: 'SignupParams.Password' Error:Field validation for 'Password' failed on the 'lte' tag", err.Error())
+		ss.Equal("Key: 'SignupParams.password' Error:Field validation for 'password' failed on the 'lte' tag", err.Error())
 	})
 
 	ss.Run("should return err if password bytes length longer than 72 bytes", func() {

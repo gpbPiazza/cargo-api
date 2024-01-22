@@ -2,18 +2,44 @@ package validator
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator"
 )
 
-func Validate(ctx context.Context, object interface{}) error {
-	validate := validator.New()
+var validate *validator.Validate
 
-	for tag := range customValidatorsTags {
-		if err := validate.RegisterValidation(tag.string(), tag.customValidator()); err != nil {
-			return err
-		}
+func init() {
+	if validate != nil {
+		return
 	}
 
+	validate = validator.New()
+	validate.RegisterTagNameFunc(setJSONTagsIntoErrMessages)
+
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+
+	for tag := range customValidatorsTags {
+		_ = validate.RegisterValidation(tag.string(), tag.customValidator())
+		// TODO: DO SOMETHING HERE LOG? FATAL? IGNORE? DONT KNOW RIGHT NOW
+	}
+}
+
+func setJSONTagsIntoErrMessages(field reflect.StructField) string {
+	name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
+	if name == "-" {
+		return ""
+	}
+	return name
+}
+
+func Validate(ctx context.Context, object interface{}) error {
 	return validate.StructCtx(ctx, object)
 }
