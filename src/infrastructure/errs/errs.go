@@ -20,6 +20,10 @@ func New(errType ErrType, message string) error {
 	return err
 }
 
+func NewUnexpected(err error) error {
+	return New(ErrUnexpected, err.Error())
+}
+
 // READY MORE ABOUT: https://cloud.google.com/apis/design/errors
 // https://www.baeldung.com/rest-api-error-handling-best-practices
 // https://developers.facebook.com/docs/whatsapp/cloud-api/support/error-codes/
