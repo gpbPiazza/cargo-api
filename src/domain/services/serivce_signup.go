@@ -61,7 +61,6 @@ func (ss *signupService) Register(ctx context.Context, params usecases.SignupPar
 
 	_ = ss.factory.Make(params, hashedPassword)
 
-	// TODO: CREATE CUSTOMER_MODEL by "usecases.SignupParams"
 	// TODO: CALL REPOSITORY TO SAVE CUSTOMER MODEL
 
 	return nil
