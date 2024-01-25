@@ -21,7 +21,7 @@ func (cr *customerRepository) FindByTaxID(ctx context.Context, taxID string) (mo
 	defer conn.Close()
 	result := new(models.Customer)
 
-	row := conn.QueryRowContext(ctx, "SELECT * FROM customers where taxID = %s", taxID)
+	row := conn.QueryRowContext(ctx, "SELECT * FROM customers where taxID = $1", taxID)
 	if row.Err() != nil {
 		return models.Customer{}, errs.NewUnexpected(row.Err())
 	}

@@ -4,8 +4,14 @@ run/api:
 	go run ./cmd/api/main.go
 
 
+test: test/integration
+
 test/unit:
-	go test ./... -p 2 -coverprofile=./${FILE_COVER}
+	go test ./... -p 2 -v -coverprofile=./${FILE_COVER}
+
+test/integration:
+	export INTEGRATION=INTEGRATION; \
+	go test ./... -p 2 -v -coverprofile=./${FILE_COVER} 
 
 cover/read: 
 	go tool cover -func=./${FILE_COVER}
