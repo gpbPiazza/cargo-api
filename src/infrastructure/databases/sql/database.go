@@ -1,36 +1,50 @@
 package sql
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/envs"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var globalDB *sql.DB
+var gPool *pgxpool.Pool
 
-func New() *sql.DB {
-	if globalDB != nil {
-		return globalDB
+func ConnectDB(ctx context.Context) context.Context {
+	if gPool != nil {
+		return SetConnCtx(ctx, gPool)
 	}
 
-	db, err := sql.Open("postgres", dataSourceName())
+	poolConfig, err := pgxpool.ParseConfig(connString())
 	if err != nil {
-		log.Fatal(fmt.Errorf("error on connect to database: %s", err.Error()))
+		log.Fatalln("unable to parse connString:", err)
 	}
 
-	dbEnvs := envs.New().Database
-	db.SetConnMaxIdleTime(time.Duration(dbEnvs.MaxIdleConns))
-	db.SetMaxOpenConns(dbEnvs.MaxOpenConns)
+	setPoolConfig(poolConfig)
 
-	globalDB = db
+	connPool, err := pgxpool.NewWithConfig(ctx, poolConfig)
+	if err != nil {
+		log.Fatalln("unable to create connection pool:", err)
+	}
 
-	return globalDB
+	if err := connPool.Ping(ctx); err != nil {
+		log.Fatalln("unable to ping database:", err)
+	}
+
+	gPool = connPool
+
+	return SetConnCtx(ctx, gPool)
 }
 
-func dataSourceName() string {
+func connString() string {
 	dbEnvs := envs.New().Database
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbEnvs.Username, dbEnvs.Password, dbEnvs.Host, dbEnvs.Port, dbEnvs.Name)
+}
+
+func setPoolConfig(poolConfig *pgxpool.Config) {
+	dbEnvs := envs.New().Database
+	poolConfig.MaxConnIdleTime = time.Duration(dbEnvs.MaxIdleConns)
+	poolConfig.MaxConns = int32(dbEnvs.MaxOpenConns)
 }

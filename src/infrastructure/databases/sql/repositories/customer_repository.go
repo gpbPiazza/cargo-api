@@ -2,12 +2,13 @@ package repositories
 
 import (
 	"context"
-	goSQL "database/sql"
 	"errors"
 
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/databases/sql"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
+
+	"github.com/jackc/pgx"
 )
 
 type customerRepository struct{}
@@ -17,22 +18,23 @@ func NewCustomerRepository() customerRepository {
 }
 
 func (cr *customerRepository) FindByTaxID(ctx context.Context, taxID string) (models.Customer, error) {
-	conn := sql.ConnFromCtx(ctx)
-	defer conn.Close()
+	conn := sql.Conn(ctx)
 	result := new(models.Customer)
 
-	row := conn.QueryRowContext(ctx, "SELECT * FROM customers where taxID = $1", taxID)
-	if row.Err() != nil {
-		return models.Customer{}, errs.NewUnexpected(row.Err())
+	row, err := conn.Query(ctx, "SELECT * FROM customers where taxID = $1", taxID)
+	if err != nil {
+		return models.Customer{}, errs.NewUnexpected(err)
 	}
+	defer row.Close()
 
-	err := row.Scan(result)
-	if errors.Is(goSQL.ErrNoRows, err) {
+	err = row.Scan(result.ID, result.TaxID)
+
+	if errors.Is(pgx.ErrNoRows, err) {
 		return *result, errs.ErrNotFound
 	}
 
 	if err != nil {
-		return *result, errs.NewUnexpected(err)
+		return models.Customer{}, errs.NewUnexpected(err)
 	}
 
 	return *result, nil

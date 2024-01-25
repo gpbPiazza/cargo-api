@@ -2,31 +2,27 @@ package sql
 
 import (
 	"context"
-	"database/sql"
 	"log"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type ctxKey struct{}
+type ctxConnKey struct{}
 
-func SetConnToCtx(ctx context.Context, conn *sql.Conn) context.Context {
-	if conn != nil {
-		return context.WithValue(ctx, ctxKey{}, conn)
+func SetConnCtx(ctx context.Context, cPool *pgxpool.Pool) context.Context {
+	if cPool != nil {
+		return context.WithValue(ctx, ctxConnKey{}, cPool)
 	}
 
-	gConn, err := globalDB.Conn(ctx)
-	if err != nil {
-		log.Fatal("error on get Conn From globalDB")
-	}
-
-	return context.WithValue(ctx, ctxKey{}, gConn)
+	return context.WithValue(ctx, ctxConnKey{}, gPool)
 }
 
-func ConnFromCtx(ctx context.Context) *sql.Conn {
-	conn, ok := ctx.Value(ctxKey{}).(*sql.Conn)
+func Conn(ctx context.Context) *pgxpool.Pool {
+	cPool, ok := ctx.Value(ctxConnKey{}).(*pgxpool.Pool)
 
 	if !ok {
-		log.Fatal("ctx has not connection db")
+		log.Fatal("ctx has not connection pool with db")
 	}
 
-	return conn
+	return cPool
 }
