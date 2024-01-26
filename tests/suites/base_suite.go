@@ -1,6 +1,8 @@
 package suites
 
-import "github.com/stretchr/testify/suite"
+import (
+	"github.com/stretchr/testify/suite"
+)
 
 type BaseSuite struct {
 	suite.Suite
