@@ -5,23 +5,26 @@ import (
 	"errors"
 
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
-	"github.com/gpbPiazza/cargo-api/src/infrastructure/databases/sql"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
 
 	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type customerRepository struct{}
+type customerRepository struct {
+	dbConn *pgxpool.Pool
+}
 
-func NewCustomerRepository() customerRepository {
-	return customerRepository{}
+func NewCustomerRepository(poolConextion *pgxpool.Pool) customerRepository {
+	return customerRepository{
+		dbConn: poolConextion,
+	}
 }
 
 func (cr *customerRepository) FindByTaxID(ctx context.Context, taxID string) (models.Customer, error) {
-	conn := sql.Conn(ctx)
 	result := new(models.Customer)
 
-	row, err := conn.Query(ctx, "SELECT * FROM customers where taxID = $1", taxID)
+	row, err := cr.dbConn.Query(ctx, "SELECT * FROM customers where taxID = $1", taxID)
 	if err != nil {
 		return models.Customer{}, errs.NewUnexpected(err)
 	}
