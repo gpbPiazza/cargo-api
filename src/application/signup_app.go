@@ -10,10 +10,12 @@ type SignupApp struct {
 	signupService usecases.SignupService
 }
 
-func (sc *SignupApp) Signup(ctx context.Context, params usecases.SignupParams) error {
+func (sa *SignupApp) Signup(ctx context.Context, params usecases.SignupParams) error {
 	// TODO: call sanitizer.SanitizeInput params
 
-	// chama o serviço de criar um costumer
+	if err := sa.signupService.Register(ctx, params); err != nil {
+		return err
+	}
 
 	// chama o serviço de login
 
