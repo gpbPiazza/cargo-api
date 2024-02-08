@@ -1,6 +1,6 @@
 package usecases
 
 type Hasher interface {
-	Hash(content string) (string, error)
-	ValidateHash(hash string, content string) error
+	Hash(password string) (string, error)
+	CompareHash(hash string, password string) error
 }

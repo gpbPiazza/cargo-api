@@ -38,6 +38,20 @@ func (hs *HasherSuite) TestCases() {
 
 		hs.Require().NoError(err)
 		hs.Require().NotEmpty(got)
-		hs.NoError(hs.hasherService.ValidateHash(got, content))
+
+		hs.NoError(hs.hasherService.CompareHash(got, content))
+	})
+
+	hs.Run("should return err when Hashed is not equal than content", func() {
+		content := "myNotHashedPassword123"
+
+		got, err := hs.hasherService.Hash(content)
+
+		hs.Require().NoError(err)
+		hs.Require().NotEmpty(got)
+
+		err = hs.hasherService.CompareHash(got, "any content")
+
+		hs.Error(err)
 	})
 }
