@@ -1,7 +1,5 @@
 package models
 
-import "github.com/gpbPiazza/cargo-api/src/infrastructure/metadata"
-
 type CustomerType string
 
 const (
@@ -17,7 +15,7 @@ const (
 )
 
 type Customer struct {
-	metadata.Data
+	Metadata
 	TaxID    string
 	Name     string
 	Password string

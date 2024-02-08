@@ -12,3 +12,7 @@ type Metadata struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
+
+func (d *Metadata) NewID() {
+	d.ID = uuid.New()
+}
