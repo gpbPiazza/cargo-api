@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	ErrMismatchedHashAndPassword = errs.New(errs.ErrValidation, "hashedPassword is not the hash of the given password")
+	ErrMismatchedHashAndPassword = errs.New(errs.ErrUnauthorized, "hashedPassword is not the hash of the given password")
 )
 
 type authenticatorService struct {
@@ -26,6 +26,9 @@ func (as *authenticatorService) Authenticate(ctx context.Context, customer model
 	if err := as.hasherService.CompareHash(customer.Password, password); err != nil {
 		return "", ErrMismatchedHashAndPassword
 	}
+
+	// TODO call tokenizer.AccessToken(ctx, customer.ID, experation)
+	// TODO call save updateAccessToken(ctx, accessToken)
 
 	return "", nil
 }
