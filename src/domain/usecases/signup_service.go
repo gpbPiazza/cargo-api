@@ -16,5 +16,5 @@ type SignupParams struct {
 }
 
 type SignupService interface {
-	Register(ctx context.Context, params SignupParams) error
+	Register(ctx context.Context, params SignupParams) (models.Customer, error)
 }

@@ -13,7 +13,8 @@ type SignupApp struct {
 func (sa *SignupApp) Signup(ctx context.Context, params usecases.SignupParams) error {
 	// TODO: call sanitizer.SanitizeInput params
 
-	if err := sa.signupService.Register(ctx, params); err != nil {
+	_, err := sa.signupService.Register(ctx, params)
+	if err != nil {
 		return err
 	}
 

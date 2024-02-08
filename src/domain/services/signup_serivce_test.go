@@ -26,6 +26,7 @@ type signupServiceSuite struct {
 	creatorCustomer        *mocks.MockCreatorCustomerRepository
 
 	SignupParams usecases.SignupParams
+	customer     models.Customer
 	ctx          context.Context
 }
 
@@ -47,6 +48,20 @@ func (ss *signupServiceSuite) SetupSubTest() {
 	ss.customerFactory = mocks.NewMockCustomerFactory(ctrl)
 	ss.creatorCustomer = mocks.NewMockCreatorCustomerRepository(ctrl)
 
+	ss.customer = models.Customer{
+		TaxID:    ss.SignupParams.TaxID,
+		Name:     ss.SignupParams.Name,
+		Password: hashedPassword,
+		Type:     models.COMPANY_CT,
+		Role:     ss.SignupParams.Role,
+		Contact: models.CustomerContact{
+			Email: ss.SignupParams.Email,
+			Phone: ss.SignupParams.Phone,
+		},
+	}
+
+	ss.customer.NewID()
+
 	ss.findCustomerRepository.
 		EXPECT().
 		FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
@@ -63,11 +78,11 @@ func (ss *signupServiceSuite) SetupSubTest() {
 		EXPECT().
 		Make(ss.SignupParams, hashedPassword).
 		AnyTimes().
-		Return(models.Customer{})
+		Return(ss.customer)
 
 	ss.creatorCustomer.
 		EXPECT().
-		Create(ss.ctx, models.Customer{}).
+		Create(ss.ctx, ss.customer).
 		AnyTimes().
 		Return(nil)
 
@@ -83,68 +98,99 @@ func (ss *signupServiceSuite) TestSignup() {
 	ss.Run("should return err when tax id is not provided", func() {
 		ss.SignupParams.TaxID = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when tax id is invalid", func() {
 		ss.SignupParams.TaxID = "000.000.000-00"
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when name is not provided", func() {
 		ss.SignupParams.Name = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when role is not provided", func() {
 		ss.SignupParams.Role = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when phone is not provided", func() {
 		ss.SignupParams.Phone = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when email is not provided", func() {
 		ss.SignupParams.Email = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when email is not valid", func() {
 		ss.SignupParams.Email = "my_email@.com"
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when role is not one of shipper or receiver", func() {
 		ss.SignupParams.Role = "ANY OTHER ROLE"
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err when password is not provided", func() {
 		ss.SignupParams.Password = ""
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err if password is less than 8 chars", func() {
 		ss.SignupParams.Password = "1234"
 
-		ss.Error(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.Error(err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return err if password is too long than 72 chars", func() {
 		ss.SignupParams.Password = string(make([]byte, 80))
 
-		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
+		ss.Empty(got)
 		ss.Require().Error(err)
 		ss.Equal("Key: 'SignupParams.password' Error:Field validation for 'password' failed on the 'lte' tag", err.Error())
 	})
@@ -152,13 +198,17 @@ func (ss *signupServiceSuite) TestSignup() {
 	ss.Run("should return err if password bytes length longer than 72 bytes", func() {
 		ss.SignupParams.Password = "😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁😁"
 
-		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
 		ss.Equal(ErrPasswordTooLong, err)
+		ss.Empty(got)
 	})
 
 	ss.Run("should return no err when all is ok", func() {
-		ss.NoError(ss.serivce.Register(ss.ctx, ss.SignupParams))
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+
+		ss.NoError(err)
+		ss.Equal(ss.customer, got)
 	})
 
 	ss.Run("should return err when findCustomerRepository returns any err that is not errNotFound", func() {
@@ -167,8 +217,9 @@ func (ss *signupServiceSuite) TestSignup() {
 			FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
 			Return(models.Customer{}, assert.AnError)
 
-		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
+		ss.Empty(got)
 		ss.Require().Error(err)
 		ss.Equal(assert.AnError, err)
 	})
@@ -179,8 +230,9 @@ func (ss *signupServiceSuite) TestSignup() {
 			Hash(ss.SignupParams.Password).
 			Return("", assert.AnError)
 
-		err := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
+		ss.Empty(got)
 		ss.Require().Error(err)
 		ss.Equal(assert.AnError, err)
 	})
@@ -191,21 +243,23 @@ func (ss *signupServiceSuite) TestSignup() {
 			FindByTaxID(ss.ctx, ss.SignupParams.TaxID).
 			Return(models.Customer{TaxID: ss.SignupParams.TaxID}, nil)
 
-		got := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
-		ss.Error(got)
-		ss.Equal(ErrCustomerAlreadyRegistered, got)
+		ss.Empty(got)
+		ss.Error(err)
+		ss.Equal(ErrCustomerAlreadyRegistered, err)
 	})
 
 	ss.Run("should return err when creatorCustomerRepository returns err", func() {
 		ss.creatorCustomer.
 			EXPECT().
-			Create(ss.ctx, models.Customer{}).
+			Create(ss.ctx, ss.customer).
 			Return(assert.AnError)
 
-		got := ss.serivce.Register(ss.ctx, ss.SignupParams)
+		got, err := ss.serivce.Register(ss.ctx, ss.SignupParams)
 
-		ss.Error(got)
-		ss.Equal(assert.AnError, got)
+		ss.Empty(got)
+		ss.Error(err)
+		ss.Equal(assert.AnError, err)
 	})
 }

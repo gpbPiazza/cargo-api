@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
 
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
@@ -20,10 +21,10 @@ var (
 )
 
 type signupService struct {
-	finderCustomer  usecases.FinderCustomerRepository
-	hasher          usecases.Hasher
-	factory         usecases.CustomerFactory
-	creatorCustomer usecases.CreatorCustomerRepository
+	finderCustomerRepository  usecases.FinderCustomerRepository
+	hasherService             usecases.Hasher
+	factory                   usecases.CustomerFactory
+	creatorCustomerRepository usecases.CreatorCustomerRepository
 }
 
 func NewSignupService(
@@ -32,42 +33,43 @@ func NewSignupService(
 	customerFactory usecases.CustomerFactory,
 	creatorCustomer usecases.CreatorCustomerRepository) *signupService {
 	return &signupService{
-		finderCustomer:  findCustomer,
-		hasher:          hasherService,
-		factory:         customerFactory,
-		creatorCustomer: creatorCustomer,
+		finderCustomerRepository:  findCustomer,
+		hasherService:             hasherService,
+		factory:                   customerFactory,
+		creatorCustomerRepository: creatorCustomer,
 	}
 }
 
-func (ss *signupService) Register(ctx context.Context, params usecases.SignupParams) error {
+func (ss *signupService) Register(ctx context.Context, params usecases.SignupParams) (models.Customer, error) {
+	emptyCustomer := models.Customer{}
 	if err := validator.Validate(ctx, params); err != nil {
-		return err
+		return emptyCustomer, err
 	}
 
 	bytesPassword := []byte(params.Password)
 	if len(bytesPassword) > maxPasswordBytes {
-		return ErrPasswordTooLong
+		return emptyCustomer, ErrPasswordTooLong
 	}
 
-	customerFound, err := ss.finderCustomer.FindByTaxID(ctx, params.TaxID)
+	customerFound, err := ss.finderCustomerRepository.FindByTaxID(ctx, params.TaxID)
 	if err != nil && !errors.Is(err, errs.ErrNotFound) {
-		return err
+		return emptyCustomer, err
 	}
 
 	if customerFound.TaxID == params.TaxID {
-		return ErrCustomerAlreadyRegistered
+		return emptyCustomer, ErrCustomerAlreadyRegistered
 	}
 
-	hashedPassword, err := ss.hasher.Hash(params.Password)
+	hashedPassword, err := ss.hasherService.Hash(params.Password)
 	if err != nil {
-		return err
+		return emptyCustomer, err
 	}
 
 	customer := ss.factory.Make(params, hashedPassword)
 
-	if err := ss.creatorCustomer.Create(ctx, customer); err != nil {
-		return err
+	if err := ss.creatorCustomerRepository.Create(ctx, customer); err != nil {
+		return emptyCustomer, err
 	}
 
-	return nil
+	return customer, nil
 }
