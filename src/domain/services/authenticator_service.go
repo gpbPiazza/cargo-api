@@ -2,10 +2,15 @@ package services
 
 import (
 	"context"
+	"time"
 
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
 	"github.com/gpbPiazza/cargo-api/src/domain/usecases"
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/errs"
+)
+
+const (
+	accessTokenExperitionTime = 3 * time.Hour
 )
 
 var (
@@ -13,12 +18,14 @@ var (
 )
 
 type authenticatorService struct {
-	hasherService usecases.Hasher
+	hasherService    usecases.Hasher
+	tokenizerService usecases.TokenizerService
 }
 
-func NewAuthenticatorService(hasherService usecases.Hasher) *authenticatorService {
+func NewAuthenticatorService(hasherService usecases.Hasher, tokenizerService usecases.TokenizerService) *authenticatorService {
 	return &authenticatorService{
-		hasherService: hasherService,
+		hasherService:    hasherService,
+		tokenizerService: tokenizerService,
 	}
 }
 
@@ -27,8 +34,5 @@ func (as *authenticatorService) Authenticate(ctx context.Context, customer model
 		return "", ErrMismatchedHashAndPassword
 	}
 
-	// TODO call tokenizer.AccessToken(ctx, customer.ID, experation)
-	// TODO call save updateAccessToken(ctx, accessToken)
-
-	return "", nil
+	return as.tokenizerService.Token(customer.ID, accessTokenExperitionTime.Seconds())
 }

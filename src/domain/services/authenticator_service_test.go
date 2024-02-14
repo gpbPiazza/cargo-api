@@ -18,7 +18,8 @@ func Test_authenticatorService_Authenticate(t *testing.T) {
 type authenticatorServiceSuite struct {
 	suite.Suite
 
-	hasherService *mocks.MockHasher
+	hasherService    *mocks.MockHasher
+	tokenizerService *mocks.MockTokenizerService
 
 	notHashedPassword string
 	serivce           *authenticatorService
@@ -31,6 +32,7 @@ func (as *authenticatorServiceSuite) SetupSubTest() {
 
 	ctrl := gomock.NewController(as.T(), gomock.WithOverridableExpectations())
 	as.hasherService = mocks.NewMockHasher(ctrl)
+	as.tokenizerService = mocks.NewMockTokenizerService(ctrl)
 
 	as.notHashedPassword = "not_hashed_password"
 	as.customer = models.Customer{
@@ -52,7 +54,13 @@ func (as *authenticatorServiceSuite) SetupSubTest() {
 		AnyTimes().
 		Return(nil)
 
-	as.serivce = NewAuthenticatorService(as.hasherService)
+	as.tokenizerService.
+		EXPECT().
+		Token(as.customer.ID, accessTokenExperitionTime.Seconds()).
+		AnyTimes().
+		Return("access_token", nil)
+
+	as.serivce = NewAuthenticatorService(as.hasherService, as.tokenizerService)
 }
 
 func (as *authenticatorServiceSuite) TestSignup() {
@@ -60,7 +68,7 @@ func (as *authenticatorServiceSuite) TestSignup() {
 		got, err := as.serivce.Authenticate(as.ctx, as.customer, as.notHashedPassword)
 
 		as.NoError(err)
-		as.Equal("", got)
+		as.Equal("access_token", got)
 	})
 
 	as.Run("should return ErrMismatchedHashAndPassword when CompareHash return err", func() {
@@ -72,6 +80,18 @@ func (as *authenticatorServiceSuite) TestSignup() {
 		got, err := as.serivce.Authenticate(as.ctx, as.customer, "wrong password")
 
 		as.Equal(ErrMismatchedHashAndPassword, err)
+		as.Empty(got)
+	})
+
+	as.Run("should return when tokenizerservice returns err", func() {
+		as.tokenizerService.
+			EXPECT().
+			Token(as.customer.ID, accessTokenExperitionTime.Seconds()).
+			Return("", assert.AnError)
+
+		got, err := as.serivce.Authenticate(as.ctx, as.customer, as.notHashedPassword)
+
+		as.Error(err)
 		as.Empty(got)
 	})
 }
