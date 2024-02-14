@@ -9,7 +9,7 @@ const cost = 14
 type hasherService struct {
 }
 
-func NewHasherService() hasherService {
+func NewService() hasherService {
 	return hasherService{}
 }
 

@@ -17,7 +17,7 @@ type HasherSuite struct {
 }
 
 func (hs *HasherSuite) SetupSubTest() {
-	hs.hasherService = NewHasherService()
+	hs.hasherService = NewService()
 }
 
 func (hs *HasherSuite) TestCases() {
