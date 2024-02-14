@@ -17,7 +17,9 @@ type EnvsSuite struct {
 
 func (es *EnvsSuite) SetupSubTest() {
 	es.initMockDataBaseEnv()
+	es.initMockAccessEnv()
 	err := os.Setenv("SERVER_PORT", "9190")
+
 	es.NoError(err)
 }
 
@@ -41,6 +43,11 @@ func (es *EnvsSuite) initMockDataBaseEnv() {
 	es.NoError(err)
 
 	err = os.Setenv("DATABASE_MAX_IDLE_CONNS", "1")
+	es.NoError(err)
+}
+
+func (es *EnvsSuite) initMockAccessEnv() {
+	err := os.Setenv("SIGNED_KEY", "access_secrect_mock")
 	es.NoError(err)
 }
 
