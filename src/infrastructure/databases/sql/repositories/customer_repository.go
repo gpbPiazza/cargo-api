@@ -15,8 +15,8 @@ type customerRepository struct {
 	dbConn *pgxpool.Pool
 }
 
-func NewCustomerRepository(poolConextion *pgxpool.Pool) customerRepository {
-	return customerRepository{
+func NewCustomerRepository(poolConextion *pgxpool.Pool) *customerRepository {
+	return &customerRepository{
 		dbConn: poolConextion,
 	}
 }
