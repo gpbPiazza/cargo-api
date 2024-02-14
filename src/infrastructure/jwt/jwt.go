@@ -19,7 +19,7 @@ func NewJwtService() *jwtService {
 	}
 }
 
-func (js *jwtService) Token(userID uuid.UUID, expirationAccessTime int) (string, error) {
+func (js *jwtService) Token(userID uuid.UUID, expirationAccessTime float64) (string, error) {
 	accessExpiration := time.Now().Add(time.Duration(expirationAccessTime) * time.Second).Unix()
 
 	claims := jwt.MapClaims{
