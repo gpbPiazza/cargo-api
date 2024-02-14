@@ -15,13 +15,13 @@ func TestSignupApp_Signup(t *testing.T) {
 type SignupAppSuite struct {
 	suite.Suite
 
-	app          SignupApp
+	app          signupApp
 	SignupParams usecases.SignupParams
 	ctx          context.Context
 }
 
 func (sa *SignupAppSuite) SetupSubTest() {
-	sa.app = SignupApp{}
+	sa.app = signupApp{}
 	sa.ctx = context.Background()
 	sa.SignupParams = usecases.SignupParams{
 		TaxID:    "93059283079",
