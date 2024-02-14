@@ -1,4 +1,4 @@
-package customer
+package factories
 
 import (
 	"github.com/gpbPiazza/cargo-api/src/domain/models"
