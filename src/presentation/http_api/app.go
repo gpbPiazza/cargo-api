@@ -1,4 +1,4 @@
-package presentation
+package http_api
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/gpbPiazza/cargo-api/src/infrastructure/envs"
-	"github.com/gpbPiazza/cargo-api/src/presentation/routes"
+	"github.com/gpbPiazza/cargo-api/src/presentation/http_api/routes"
 )
 
 func NewApp() app {
