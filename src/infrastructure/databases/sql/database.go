@@ -12,12 +12,9 @@ import (
 
 var gPool *pgxpool.Pool
 
-// ConnectDB star the connection with relational data base and configuration of;
-// it returns a new value of the passed ctx with the connections pool seted,
-// use SetConnCtx and Conn functions to use the pool conection with the ctx.
-func ConnectDB(ctx context.Context) *pgxpool.Pool {
+func ConnectDB(ctx context.Context) {
 	if gPool != nil {
-		return gPool
+		return
 	}
 
 	poolConfig, err := pgxpool.ParseConfig(connString())
@@ -37,8 +34,6 @@ func ConnectDB(ctx context.Context) *pgxpool.Pool {
 	}
 
 	gPool = connPool
-
-	return gPool
 }
 
 func connString() string {

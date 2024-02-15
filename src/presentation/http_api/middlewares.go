@@ -5,6 +5,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-func setUpMiddlewares(fiber *fiber.App) {
+func setMiddlewares(fiber *fiber.App) {
 	fiber.Use(logger.New())
 }
